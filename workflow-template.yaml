@@ -3,9 +3,9 @@ kind: ServingTemplate
 metadata:
   name: lion-json-endpoint
   annotations:
-    scenarios.ai.sap.com/name: "Lion JSON Endpoint"
+    scenarios.ai.sap.com/name: "lion-json-endpoint"
     scenarios.ai.sap.com/description: "Endpoint minimo de prueba que devuelve JSON hardcodeado"
-    executables.ai.sap.com/name: "JSON Test Server"
+    executables.ai.sap.com/name: "json-test-server"
     executables.ai.sap.com/description: "Servidor HTTP minimo para validar deployment en SAP AI Core"
   labels:
     scenarios.ai.sap.com/id: "lion-json-endpoint"
