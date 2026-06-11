@@ -1,93 +1,28 @@
-apiVersion: ai.sap.com/v1alpha1
-kind: ServingTemplate
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
 metadata:
-  name: lion-json-endpoint
+  name: lion-hello-world
   annotations:
-    scenarios.ai.sap.com/name: "Lion JSON Endpoint"
-    scenarios.ai.sap.com/description: "Endpoint minimo de prueba que devuelve JSON hardcodeado"
-    executables.ai.sap.com/name: "JSON Test Server"
-    executables.ai.sap.com/description: "Servidor HTTP minimo para validar deployment en SAP AI Core"
+    scenarios.ai.sap.com/name: "Lion Hello World"
+    scenarios.ai.sap.com/description: "Escenario mínimo de prueba para SAP AI Core"
+    executables.ai.sap.com/name: "Hello World Execution"
+    executables.ai.sap.com/description: "Ejecutable mínimo que imprime un mensaje"
   labels:
-    scenarios.ai.sap.com/id: "lion-json-endpoint"
-    executables.ai.sap.com/id: "lion-json-endpoint"
+    scenarios.ai.sap.com/id: "lion-hello-world"
+    executables.ai.sap.com/id: "hello-world"
     ai.sap.com/version: "1.0.0"
 spec:
-  template:
-    apiVersion: "serving.kserve.io/v1beta1"
-    metadata:
-      annotations: |
-        autoscaling.knative.dev/metric: concurrency
-        autoscaling.knative.dev/target: 1
-        autoscaling.knative.dev/targetBurstCapacity: 0
-      labels: |
-        ai.sap.com/resourcePlan: infer.s
-    spec: |
-      predictor:
-        minReplicas: 1
-        maxReplicas: 1
-        containers:
-        - name: kfserving-container
-          image: python:3.11-slim
-          ports:
-            - containerPort: 9001
-              protocol: TCP
-          command:
-            - python
-            - -u
-            - -c
-          args:
-            - |
-              from http.server import BaseHTTPRequestHandler, HTTPServer
-              import json
-              import time
-              import os
-
-              PORT = int(os.environ.get("PORT", "9001"))
-
-              class Handler(BaseHTTPRequestHandler):
-                  def send_json(self, payload, status=200):
-                      body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-                      self.send_response(status)
-                      self.send_header("Content-Type", "application/json; charset=utf-8")
-                      self.send_header("Content-Length", str(len(body)))
-                      self.end_headers()
-                      self.wfile.write(body)
-
-                  def do_GET(self):
-                      self.send_json({
-                          "status": "ok",
-                          "runtime": "SAP AI Core",
-                          "message": "Endpoint JSON hardcodeado funcionando",
-                          "method": "GET",
-                          "path": self.path,
-                          "timestamp": int(time.time())
-                      })
-
-                  def do_POST(self):
-                      length = int(self.headers.get("Content-Length", "0"))
-                      raw_body = self.rfile.read(length).decode("utf-8") if length > 0 else ""
-
-                      try:
-                          received = json.loads(raw_body) if raw_body else None
-                      except Exception:
-                          received = raw_body
-
-                      self.send_json({
-                          "status": "ok",
-                          "runtime": "SAP AI Core",
-                          "message": "POST recibido correctamente",
-                          "method": "POST",
-                          "path": self.path,
-                          "received": received,
-                          "timestamp": int(time.time())
-                      })
-
-                  def log_message(self, format, *args):
-                      print("%s - - [%s] %s" % (
-                          self.client_address[0],
-                          self.log_date_time_string(),
-                          format % args
-                      ), flush=True)
-
-              print(f"Servidor JSON escuchando en puerto {PORT}", flush=True)
-              HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
+  entrypoint: main
+  templates:
+    - name: main
+      metadata:
+        labels:
+          ai.sap.com/resourcePlan: starter
+      container:
+        image: python:3.11-slim
+        command:
+          - python
+          - -c
+        args:
+          - |
+            print("Prueba de Escenario")
