@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: lion-hello-world
+  annotations:
+    scenarios.ai.sap.com/name: "Lion Hello World"
+    scenarios.ai.sap.com/description: "Escenario mínimo de prueba para SAP AI Core"
+    executables.ai.sap.com/name: "Hello World Execution"
+    executables.ai.sap.com/description: "Ejecutable mínimo que imprime un mensaje"
+  labels:
+    scenarios.ai.sap.com/id: "lion-hello-world"
+    executables.ai.sap.com/id: "hello-world"
+    ai.sap.com/version: "1.0.0"
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      metadata:
+        labels:
+          ai.sap.com/resourcePlan: starter
+      container:
+        image: python:3.11-slim
+        command:
+          - python
+          - -c
+        args:
+          - |
+            print("Hello from SAP AI Core")
